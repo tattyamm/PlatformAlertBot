@@ -94,6 +94,7 @@ end
 words = [
 	"アプリ 課金 できない -rt",
 	"アプリ 課金 エラー -rt",
+	"課金 反映 -rt",
 ]
 
 
@@ -105,20 +106,18 @@ twClient = Twitter::REST::Client.new do |config|
 #  config.access_token        = TW_ACCESS_TOKEN
 #  config.access_token_secret = TW_ACCESS_TOKEN_SECRET
 end
+word = "(" + words.join(") OR (") + ")"
 tweetAlertList = []
-words.each do |word|
-	results = twClient.search(
-		word,
-		:lang => "ja",
-		:result_type => "recent",
-		:count => 5,	#default 15. max 
-		:until => ((Date.today) + 1).to_s,
-	)
-
-	results.attrs[:statuses].each do |tweet|
-		if (Time.parse(tweet[:created_at]) > Time.now - SEARCH_TERM) then
-			tweetAlertList << tweet
-		end
+results = twClient.search(
+	word,
+	:lang => "ja",
+	:result_type => "recent",
+	:count => 5,	#default 15. max 
+	:until => ((Date.today) + 1).to_s,
+)
+results.attrs[:statuses].each do |tweet|
+	if (Time.parse(tweet[:created_at]) > Time.now - SEARCH_TERM) then
+		tweetAlertList << tweet
 	end
 end
 
